@@ -16,3 +16,12 @@ export async function getProduct(prodId) {
 }
 
 //try-catch för POST PUT och DELETE menu
+export async function addNewProduct(productData) {
+  try { 
+    const product = new Product(productData)
+    return await product.save();
+  } catch {
+    console.log(error.message);
+    return null;
+  }
+}

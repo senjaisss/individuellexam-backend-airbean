@@ -30,6 +30,7 @@ export async function registerUser(username, password) {
       username,
       password,
       userId,
+      role
     });
 
     await newUser.save();

@@ -1,5 +1,6 @@
 import { Router } from 'express';
-import { getAllProducts } from '../services/products.js';
+import { addNewProduct, getAllProducts } from '../services/products.js';
+import authenticate from '../middlewares/authenticate.js';
 
 const router = Router();
 
@@ -20,10 +21,25 @@ router.get('/', async (req, res, next) => {
   }
 });
 
-export default router;
-
 //POST add new product
+router.post('/', authenticate, async (req, res, next) => {
+  const result = await addNewProduct(req.body);
+
+  if (result) {
+    res.json({
+      success: true,
+      products: result,
+    });
+  } else {
+    next({
+      status: 400,
+      message: 'Could not add new product',
+    });
+  }
+})
 
 //PUT update product
 
 //DELETE product
+
+export default router;

@@ -11,12 +11,14 @@ router.post('/login', validateAuthBody, async (req, res, next) => {
 
   if (user && user.password === password) {
     global.user = user;
+    const token = jwt.sign()/* lägg till token!! */
     res.json({
       success: true,
       message: 'Login successful',
       user: {
         userId: user.userId,
         username: user.username,
+        role: user.role
       },
     });
   } else {
@@ -29,7 +31,7 @@ router.post('/login', validateAuthBody, async (req, res, next) => {
 
 // REGISTER lägg till role här!!
 router.post('/register', validateAuthBody, async (req, res, next) => {
-  const { username, password } = req.body;
+  const { username, password, role = 'user' } = req.body;
   const isUsernameTaken = await checkIfUsernameExists(username);
 
   if (isUsernameTaken) {
@@ -39,7 +41,7 @@ router.post('/register', validateAuthBody, async (req, res, next) => {
     });
   }
 
-  const newUser = await registerUser(username, password);
+  const newUser = await registerUser(username, password, role);
 
   if (newUser) {
     res.status(201).json({
