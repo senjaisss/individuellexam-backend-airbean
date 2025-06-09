@@ -9,7 +9,10 @@ const productSchema = new Schema(
     desc: { type: String },
     price: { type: Number, required: true },
   },
-  { collection: 'menu' }
+  { 
+    collection: 'menu',
+    timestamps: true
+  }
 );
 
 const Product = mongoose.model('Product', productSchema);
