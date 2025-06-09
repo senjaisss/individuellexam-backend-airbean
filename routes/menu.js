@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { addNewProduct, getAllProducts } from '../services/products.js';
-import authenticate from '../middlewares/authenticate.js';
+import { authenticate, authorizeRole } from '../middlewares/authenticate.js';
 
 const router = Router();
 
@@ -22,7 +22,7 @@ router.get('/', async (req, res, next) => {
 });
 
 //POST add new product
-router.post('/', authenticate, async (req, res, next) => {
+router.post('/', authenticate, authorizeRole('admin'), async (req, res, next) => {
   const result = await addNewProduct(req.body);
 
   if (result) {

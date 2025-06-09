@@ -21,7 +21,7 @@ export async function checkIfUsernameExists(username) {
   }
 }
 
-export async function registerUser(username, password) {
+export async function registerUser(username, password, role = 'user') {
   try {
     const shortUuid = uuidv4().split('-')[0];
     const userId = `user-${shortUuid}`;
@@ -30,7 +30,7 @@ export async function registerUser(username, password) {
       username,
       password,
       userId,
-      role
+      role,
     });
 
     await newUser.save();

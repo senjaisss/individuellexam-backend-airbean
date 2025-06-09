@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import jwt from 'jsonwebtoken';
 import validateAuthBody from '../middlewares/validateAuthBody.js';
 import { checkIfUsernameExists, registerUser } from '../services/users.js';
 
@@ -11,10 +12,20 @@ router.post('/login', validateAuthBody, async (req, res, next) => {
 
   if (user && user.password === password) {
     global.user = user;
-    const token = jwt.sign()/* lägg till token!! */
+    const token = jwt.sign(
+      {
+        userId: user.userId,
+        username: user.username,
+        role: user.role
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' }
+    );
+
     res.json({
       success: true,
       message: 'Login successful',
+      token,
       user: {
         userId: user.userId,
         username: user.username,

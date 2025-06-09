@@ -1,19 +1,29 @@
 import jwt from 'jsonwebtoken';
 
-export default function authenticate(req, res, next) {
+export function authenticate(req, res, next) {
   const authHeader = req.headers.authorization;
 
-  if (!authHeader) {
-    return res.status(401).json({ message: 'No token provided' });
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ message: 'Missing or invalid token' });
   }
 
   const token = authHeader.split(' ')[1];
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded; // Lägg till användarinformation i request
+    req.user = decoded;
     next();
-  } catch (error) {
-    res.status(401).json({ message: 'Invalid token' });
+  } catch (err) {
+    return res.status(401).json({ message: 'Invalid token' });
   }
+}
+
+export function authorizeRole(role) {
+  return (req, res, next) => {
+    if (req.user?.role === role) {
+      next();
+    } else {
+      res.status(403).json({ message: 'Forbidden – not authorized' });
+    }
+  };
 }
