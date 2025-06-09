@@ -21,3 +21,9 @@ router.get('/', async (req, res, next) => {
 });
 
 export default router;
+
+//POST add new product
+
+//PUT update product
+
+//DELETE product

@@ -27,7 +27,7 @@ router.post('/login', validateAuthBody, async (req, res, next) => {
   }
 });
 
-// REGISTER
+// REGISTER lägg till role här!!
 router.post('/register', validateAuthBody, async (req, res, next) => {
   const { username, password } = req.body;
   const isUsernameTaken = await checkIfUsernameExists(username);

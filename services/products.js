@@ -14,3 +14,5 @@ export async function getProduct(prodId) {
     return null;
   }
 }
+
+//try-catch för POST PUT och DELETE menu
