@@ -18,9 +18,24 @@ export async function getProduct(prodId) {
 //try-catch för POST PUT och DELETE menu
 export async function addNewProduct(productData) {
   try { 
-    const product = new Product(productData)
+    const product = new Product(productData);
     return await product.save();
-  } catch {
+  } catch (error) {
+    console.log(error.message);
+    return null;
+  }
+}
+
+export async function updateProduct(prodId, productData) {
+  try {
+    const updatedProduct = await Product.findOneAndUpdate(
+      { prodId },
+      productData,
+      { new: true }
+    );
+
+    return updatedProduct;
+  } catch (error) {
     console.log(error.message);
     return null;
   }

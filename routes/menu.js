@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { addNewProduct, getAllProducts } from '../services/products.js';
+import { addNewProduct, getAllProducts, updateProduct } from '../services/products.js';
 import { authenticate, authorizeRole } from '../middlewares/authenticate.js';
 
 const router = Router();
@@ -28,7 +28,7 @@ router.post('/', authenticate, authorizeRole('admin'), async (req, res, next) =>
   if (result) {
     res.json({
       success: true,
-      products: result,
+      product: result,
     });
   } else {
     next({
@@ -39,6 +39,24 @@ router.post('/', authenticate, authorizeRole('admin'), async (req, res, next) =>
 })
 
 //PUT update product
+router.put('/:prodId', authenticate, authorizeRole('admin'), async (req, res, next) => {
+  const { prodId } = req.params;
+  const productData = req.body;
+
+  const result = await updateProduct(prodId, productData);
+
+  if (result) {
+    res.json({
+      success: true,
+      product: result,
+    });
+  } else {
+    next({
+      status: 400,
+      message: 'Could not update product',
+    });
+  }
+})
 
 //DELETE product
 
