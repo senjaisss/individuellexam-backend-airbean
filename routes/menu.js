@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { addNewProduct, getAllProducts, updateProduct } from '../services/products.js';
+import { deleteProduct, addNewProduct, getAllProducts, updateProduct } from '../services/products.js';
 import { authenticate, authorizeRole } from '../middlewares/authenticate.js';
 
 const router = Router();
@@ -59,5 +59,22 @@ router.put('/:prodId', authenticate, authorizeRole('admin'), async (req, res, ne
 })
 
 //DELETE product
+router.delete('/:prodId', authenticate, authorizeRole('admin'), async (req, res, next) => {
+  const { prodId } = req.params;
+
+  const result = await deleteProduct(prodId);
+
+  if (result) {
+    res.json({
+      success: true,
+      message: `Product '${prodId}' was deleted`,
+    });
+  } else {
+    next({
+      status: 404,
+      message: 'Product not found',
+    });
+  }
+})
 
 export default router;
