@@ -1,0 +1,125 @@
+info:
+  description: API documentation for Airbean coffee shop
+  title: Airbean API
+  version: 1.0.0
+openapi: 3.0.1
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    User:
+      description: User Body
+      type: object
+      properties: 
+        username:
+          type: string
+          example: senja
+        password:
+          type: string
+          example: supersecretpassword
+    Menu:
+      description: Menu
+      type: object
+      properties:
+        prodId:
+          type: string
+          example: prod-rgist
+  responses:
+    BadRequestError:
+      description: Bad request from client
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: false
+              message:
+                type: string
+                example: Missing or invalid parameters in request
+    NotFoundError:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success: 
+                type: boolean
+                example: false
+              message:
+                type: string
+                example: Requested resource not found
+paths:
+  /api/auth/login:
+    post:
+      tags:
+        - Auth
+  /api/auth/register:
+    post:
+      tags:
+        - Auth
+      description: Register new user
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: 
+              type: object
+              $ref: "#/components/schemas/UserBody"
+      responses:
+        "200":
+          description: Successfull registration
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: User logged out successfully
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+  /api/auth/logout:
+    get:
+      tags:
+        - Auth
+      description: Logout for user
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Response for successful logout
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: User logged out successfully
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+  /api/menu:
+    post:
+      tags:
+        - Menu
+  /api/menu/{prodId}:
+    put:
+      tags:
+        - Menu
+    delete:
+      tags:
+        - Menu
