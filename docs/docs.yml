@@ -1,0 +1,257 @@
+info:
+  description: API documentation for Airbean coffee shop
+  title: Airbean API
+  version: 1.0.0
+openapi: 3.0.1
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    UserBody:
+      description: User Body
+      type: object
+      properties: 
+        username:
+          type: string
+          example: senja
+        password:
+          type: string
+          example: supersecretpassword
+    Menu:
+      description: Product on menu
+      type: object
+      properties:
+        prodId:
+          type: string
+          example: prod-rgist
+        title:
+          type: string
+          example: Espresso
+        desc:
+          type: string
+          example: väldigt gott kaffe jag lovar
+        price:
+          type: number
+          example: 42
+  responses:
+    BadRequestError:
+      description: Bad request from client
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: false
+              message:
+                type: string
+                example: Missing or invalid parameters in request
+    NotFoundError:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success: 
+                type: boolean
+                example: false
+              message:
+                type: string
+                example: Requested resource not found
+paths:
+  /api/auth/login:
+    post:
+      tags:
+        - Auth
+      description: Login user or admin. Does not require token.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserBody"
+      responses:
+        "200":
+          description: Successfull login
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Login successfull
+                  token:
+                    type: string
+                    example: eyJhbGciOiJIUzI1NiIsIn...
+                  user:
+                    type: object
+                    properties:
+                      userId:
+                        type: string
+                        example: user-abc123
+                      username:
+                        type: string
+                        example: senja
+                      role:
+                        type: string
+                        example: admin
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+  /api/auth/register:
+    post:
+      tags:
+        - Auth
+      description: Register new user. Does not require token.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserBody"
+      responses:
+        "200":
+          description: Successfull registration
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Registration successfull
+                  user:
+                    type: object
+                    properties:
+                      userId:
+                        type: string
+                        example: user-abc123
+                      username:
+                        type: string
+                        example: senja
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+  /api/auth/logout:
+    get:
+      tags:
+        - Auth
+      description: Logout for user. No authentication required.
+      responses:
+        "200":
+          description: Response for successful logout
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: User logged out successfully
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+  /api/menu:
+    post:
+      tags:
+        - Menu
+      description: Add a new product to the menu. Requires JWT token and admin role.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Menu"
+      responses:
+        "200":
+          description: Product successfully added
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  product:
+                    $ref: "#/components/schemas/Menu"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+  /api/menu/{prodId}:
+    put:
+      tags:
+        - Menu
+      description: Update a product in the menu by ID. Requires JWT token and admin role.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: prodId
+          required: true
+          schema:
+            type: string
+          description: ID of the product to update
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Menu"
+      responses:
+        "200":
+          description: Product successfully updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  product:
+                    $ref: "#/components/schemas/Menu"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+    delete:
+      tags:
+        - Menu
+      description: Delete a product from the menu by ID. Requires JWT token and admin role.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: prodId
+          required: true
+          schema:
+            type: string
+          description: ID of the product to delete
+      responses:
+        "200":
+          description: Product successfully deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Product 'prod-abc123' was deleted
+        "404":
+          $ref: "#/components/responses/NotFoundError"
